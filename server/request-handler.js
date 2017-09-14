@@ -80,24 +80,29 @@ var requestHandler = function(request, response) {
     response.writeHead(statusCode, headers);
 
     let body = [];
+
     request.on('error', (err) => {
       console.error(err);
-    }).on('data', (chunk) => {
-      body.push(chunk);
-    }).on('end', () => {
-      body = Buffer.concat(body).toString();
+    })
 
-        console.log('pre querystring', typeof body, body);
+    request.on('data', (chunk) => {
+      body.push(chunk);
+    })
+
+    request.on('end', () => {
+      if (typeof body[0] !== 'string') {
+        body = Buffer.concat(body).toString();
+      } else {
+        body = body[0];
+      }
+
       if (body[0] === '{') {
         body = JSON.parse(body);
       } else {
         body = querystring.parse(body);
       }
-        console.log('Post queryparse body', typeof body, body);
 
       if (body) {
-        console.log('Post data message', data);
-        console.log('Post body', body);
         data.push(body);
         response.end(JSON.stringify({results: body}));
       } else {
@@ -105,7 +110,6 @@ var requestHandler = function(request, response) {
       }
     });
 
-    console.log('handlePost invoked', body);
   };
 
   let handleOptions = function() {
@@ -113,6 +117,8 @@ var requestHandler = function(request, response) {
     response.end();
   };
 
+
+  // Decision Maker
   if (request.method === 'GET' && request.url === '/classes/messages') {
     handleGet();
   } else if (request.method === 'POST' && request.url === '/classes/messages') {
