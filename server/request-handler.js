@@ -83,11 +83,11 @@ var requestHandler = function(request, response) {
 
     request.on('error', (err) => {
       console.error(err);
-    })
+    });
 
     request.on('data', (chunk) => {
       body.push(chunk);
-    })
+    });
 
     request.on('end', () => {
       if (typeof body[0] !== 'string') {
@@ -103,6 +103,7 @@ var requestHandler = function(request, response) {
       }
 
       if (body) {
+        body.objectId = data.length;
         data.push(body);
         response.end(JSON.stringify({results: body}));
       } else {

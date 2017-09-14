@@ -76,4 +76,45 @@ describe('server', function() {
   });
 
 
+   it('should generate an ObjectId', function(done) {
+    var requestParams = {method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Jono',
+        message: 'Do my bidding!'}
+    };
+
+    request(requestParams, function(error, response, body) {
+      // Now if we request the log, that message we posted should be there:
+      request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+
+
+        var messages = JSON.parse(body).results;
+        expect(messages[0].username).to.equal('Jono');
+        expect(messages[0].message).to.equal('Do my bidding!');
+        expect(messages[0].objectId).to.equal(0);
+
+      });
+    });
+
+    request(requestParams, function(error, response, body) {
+      // Now if we request the log, that message we posted should be there:
+      request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+
+
+        var messages = JSON.parse(body).results;
+        expect(messages[0].username).to.equal('Jono');
+        expect(messages[0].message).to.equal('Do my bidding!');
+        expect(messages[0].objectId).to.equal(0);
+
+        expect(messages[1].username).to.equal('Jono');
+        expect(messages[1].message).to.equal('Do my bidding!');
+        expect(messages[1].objectId).to.equal(1);
+        done();
+      });
+    });
+
+  });
+
+
 });
