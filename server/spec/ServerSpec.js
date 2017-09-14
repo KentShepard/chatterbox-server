@@ -116,4 +116,38 @@ describe('Node Server Request Listener Function', function() {
       });
   });
 
+  it('Should generate an objectId', function() {
+    var stubMsg = {
+      username: 'Jono',
+      message: 'Do my bidding!'
+    };
+    var req = new stubs.request('/classes/messages', 'POST', stubMsg);
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(201);
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(201);
+
+    // Now if we request the log for that room the message we posted should be there:
+    req = new stubs.request('/classes/messages', 'GET');
+    res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(200);
+    var messages = JSON.parse(res._data).results;
+    expect(messages.length).to.be.above(0);
+    expect(messages[0].username).to.equal('Jono');
+    expect(messages[0].message).to.equal('Do my bidding!');
+    expect(messages[0].objectId).to.equal(0);
+
+    expect(messages[1].username).to.equal('Jono');
+    expect(messages[1].message).to.equal('Do my bidding!');
+    expect(messages[1].objectId).to.equal(1);
+    expect(res._ended).to.equal(true);
+  });
 });

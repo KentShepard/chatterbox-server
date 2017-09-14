@@ -11,6 +11,9 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
+const querystring = require('querystring');
+const fs = require('fs');
+
 let data = [];
 
 var defaultCorsHeaders = {
@@ -35,7 +38,6 @@ var requestHandler = function(request, response) {
   // Adding more logging to your server can be an easy way to get passive
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
-  const querystring = require('querystring');
   const { method, url } = request;
 
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
@@ -46,7 +48,7 @@ var requestHandler = function(request, response) {
 
 
 
-  let handleGet = function() {
+  let handleGetMessages = function() {
   // The outgoing status.
     var statusCode = 200;
 
@@ -118,10 +120,30 @@ var requestHandler = function(request, response) {
     response.end();
   };
 
+  let handleGetHtml = function() {
+    fs.readFile('../chatterbox/hrr26-chatterbox-client/client/index.html', function(err, html) {
+      if (err) {
+        throw err;
+      }
+      response.writeHead(200, {"Content-Type": "text/html"});
+      response.write(html);
+      response.end();
+    });
+  };
+  // request.url = '/styles/styles.css'
+  // fs.readFile(`.${request.url}`)
+  let allowedEndpoints = {
+    '/classes/messages': true,
+    '/': true
+  };
 
   // Decision Maker
-  if (request.method === 'GET' && request.url === '/classes/messages') {
-    handleGet();
+  if (request.method === 'GET' && allowedEndpoints[request.url]) {
+    if (request.url === '/classes/messages') {
+      handleGetMessages();
+    } else if (request.url === '/') {
+      handleGetHtml();
+    }
   } else if (request.method === 'POST' && request.url === '/classes/messages') {
     handlePost();
   } else if (request.method === 'OPTIONS') {
