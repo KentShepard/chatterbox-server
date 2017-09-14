@@ -86,10 +86,19 @@ var requestHandler = function(request, response) {
       body.push(chunk);
     }).on('end', () => {
       body = Buffer.concat(body).toString();
-      body = querystring.parse(body);
+
+        console.log('pre querystring', typeof body, body);
+      if (body[0] === '{') {
+        body = JSON.parse(body);
+      } else {
+        body = querystring.parse(body);
+      }
+        console.log('Post queryparse body', typeof body, body);
+
       if (body) {
-        data.push(body);
         console.log('Post data message', data);
+        console.log('Post body', body);
+        data.push(body);
         response.end(JSON.stringify({results: body}));
       } else {
         response.end(JSON.stringify({results: 'No message sent'}));
