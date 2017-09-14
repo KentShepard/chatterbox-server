@@ -72,19 +72,6 @@ var requestHandler = function(request, response) {
     response.end(JSON.stringify({results: data}));
   };
 
-  // fs.readFile('demofile1.html', function(err, data) {
-  //   res.writeHead(200, {'Content-Type': 'text/html'});
-  //   res.write(data);
-  //   res.end();
-  // });
-
-  // fs.writeFile('mynewfile3.txt', 'Hello content!', function (err) {
-  //   if (err) throw err;
-  //   console.log('Saved!');
-  // });
-  // username=Dom&text=test&roomname=lobby
-
-
   let handlePost = function () {
     var statusCode = 201;
     response.writeHead(statusCode, headers);
@@ -99,20 +86,20 @@ var requestHandler = function(request, response) {
       body = querystring.parse(body);
       if (body) {
         data.push(body);
-        console.log('Post data message', body);
+        console.log('Post data message', data);
         response.end(JSON.stringify({results: body}));
       } else {
         response.end(JSON.stringify({results: 'No message sent'}));
       }
-    })
+    });
 
-    console.log('handlePost invoked', body)
+    console.log('handlePost invoked', body);
   };
 
   let handleOptions = function() {
     response.writeHead(200, headers);
     response.end();
-  }
+  };
 
   if (request.method === 'GET' && request.url === '/classes/messages') {
     handleGet();
@@ -122,7 +109,7 @@ var requestHandler = function(request, response) {
     handleOptions();
   } else {
     response.writeHead(404, headers);
-    response.end('404 error', JSON.stringify(request));
+    response.end('404 error');
   }
 };
 

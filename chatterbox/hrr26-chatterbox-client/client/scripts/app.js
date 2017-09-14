@@ -50,6 +50,7 @@ var app = {
 
         // Trigger a fetch to update the messages, pass true to animate
         app.fetch();
+        console.log('fetch triggered');
       },
       error: function (error) {
         console.error('chatterbox: Failed to send message', error);
@@ -64,6 +65,7 @@ var app = {
       // data: { order: '-createdAt' },
       contentType: 'application/json',
       success: function(data) {
+        console.log('fetch succeeded');
         data = JSON.parse(data);
 
         // Don't bother if we have nothing to work with
@@ -76,7 +78,8 @@ var app = {
         var mostRecentMessage = data.results[data.results.length - 1];
 
         // Only bother updating the DOM if we have a new message
-        if (mostRecentMessage.objectId !== app.lastMessageId) {
+        // if (mostRecentMessage.objectId !== app.lastMessageId) {
+          console.log('inside IF')
           // Update the UI with the fetched rooms
           app.renderRoomList(data.results);
 
@@ -85,7 +88,7 @@ var app = {
 
           // Store the ID of the most recent message
           app.lastMessageId = mostRecentMessage.objectId;
-        }
+        // }
       },
       error: function(error) {
         console.error('chatterbox: Failed to fetch messages', error);
