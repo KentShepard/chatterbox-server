@@ -11,7 +11,7 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
-let data = [{username: 'Jono', text: 'Do my bidding!'}];
+let data = [];
 
 var defaultCorsHeaders = {
   'access-control-allow-origin': '*',
@@ -66,10 +66,13 @@ var requestHandler = function(request, response) {
     // response.end() will be the body of the response - i.e. what shows
     // up in the browser.
     //
-
+    if (data.length < 1) {
+      response.end(JSON.stringify({results: [{username: 'Admin', text: 'Server is currently empty'}]}));
+    } else {
+      response.end(JSON.stringify({results: data}));
+    }
     // Calling .end "flushes" the response's internal buffer, forcing
     // node to actually send all the data over to the client.
-    response.end(JSON.stringify({results: data}));
   };
 
   let handlePost = function () {
