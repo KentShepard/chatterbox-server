@@ -13,6 +13,7 @@ this file and include it in basic-server.js so that it actually works.
 **************************************************************/
 const querystring = require('querystring');
 const fs = require('fs');
+const url = require('url');
 
 let data = [];
 
@@ -119,30 +120,55 @@ var requestHandler = function(request, response) {
     response.writeHead(200, headers);
     response.end();
   };
+  // Example for sending css file
+  // =================================================================================
+  // if(/^\/[a-zA-Z0-9\/]*.css$/.test(request.url.toString())){
+  //    sendFileContent(response, request.url.toString().substring(1), "text/css");
+  // }
+  // example: /client/styles.css
+  let dir = './chatterbox/hrr26-chatterbox-client/client';
 
-  let handleGetHtml = function() {
-    fs.readFile('../chatterbox/hrr26-chatterbox-client/client/index.html', function(err, html) {
-      if (err) {
-        throw err;
+  function handleGetFiles(response, fileName, contentType){
+    fs.readFile(`${dir + fileName}`, function(err, data){
+      if(err){
+        response.writeHead(404);
+        response.write("Not Found!");
       }
-      response.writeHead(200, {"Content-Type": "text/html"});
-      response.write(html);
+      else{
+        response.writeHead(200, {'Content-Type': contentType});
+        response.write(data);
+      }
       response.end();
     });
-  };
-  // request.url = '/styles/styles.css'
-  // fs.readFile(`.${request.url}`)
+  }
+  // =================================================================================
   let allowedEndpoints = {
     '/classes/messages': true,
-    '/': true
+    '/': true,
+    '/styles/styles.css': true,
+    '/bower_components/jquery/dist/jquery.js': true,
+    '/env/config.js': true,
+    '/scripts/app.js': true,
+    '/images/spiffygif_46x46.gif': true
   };
 
+  let mimes = {
+    'js': 'text/javascript',
+    'html': 'text/html',
+    'css': 'text/css',
+    'json': 'application/json',
+    'gif': 'image/gif'
+  }
+
   // Decision Maker
-  if (request.method === 'GET' && allowedEndpoints[request.url]) {
+  if (request.method === 'GET' && allowedEndpoints[request.url] || request.url.slice(0, 11) === '/?username=') {
     if (request.url === '/classes/messages') {
       handleGetMessages();
-    } else if (request.url === '/') {
-      handleGetHtml();
+    } else if (request.url === '/' || request.url.slice(0, 11) === '/?username=') {
+      handleGetFiles(response, '/index.html', mimes['html']);
+    } else {
+      var ext = request.url.split('.').pop();
+      handleGetFiles(response, request.url, mimes[ext]);
     }
   } else if (request.method === 'POST' && request.url === '/classes/messages') {
     handlePost();
@@ -150,7 +176,7 @@ var requestHandler = function(request, response) {
     handleOptions();
   } else {
     response.writeHead(404, headers);
-    response.end('404 error');
+    response.end('404 error', request.url);
   }
 };
 
