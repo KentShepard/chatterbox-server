@@ -12,7 +12,7 @@ const headers = {
   'Content-Type': 'JSON'
 };
 
-var requestHandler = function(request, response) {
+let requestHandler = function(request, response) {
   const { method, url } = request;
 
   console.log('Serving request type ' + request.method + ' for url ' + request.url);

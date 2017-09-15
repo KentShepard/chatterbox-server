@@ -65,7 +65,6 @@ var app = {
       // data: { order: '-createdAt' },
       contentType: 'application/json',
       success: function(data) {
-        console.log('fetch succeeded');
         data = JSON.parse(data);
 
         // Don't bother if we have nothing to work with
@@ -79,7 +78,6 @@ var app = {
 
         // Only bother updating the DOM if we have a new message
         // if (mostRecentMessage.objectId !== app.lastMessageId) {
-          console.log('inside IF')
           // Update the UI with the fetched rooms
           app.renderRoomList(data.results);
 
